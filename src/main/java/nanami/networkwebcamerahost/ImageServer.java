@@ -10,8 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-import static java.lang.Thread.sleep;
-
 public class ImageServer {
     private String hostIP;
     private String hostPort;
@@ -22,6 +20,8 @@ public class ImageServer {
     private Socket mSocket = null;
     private Thread receiveImageThread;
     private String TAG = "[ImageServer]";
+
+    /* Public Method */
 
     public ImageServer(String hostIP, String hostPort) {
         this.hostIP = hostIP;
@@ -56,6 +56,8 @@ public class ImageServer {
         return this.mImageScreen;
     }
 
+    /* Private Method */
+
     private void start() {
         receiveImageThread = new Thread(() -> {
             if (!connectionEstablished) {
@@ -74,12 +76,6 @@ public class ImageServer {
                 int dataSize = ByteBuffer.wrap(dataSizeByte).getInt();
                 System.out.println(TAG + "\treceived\t" + dataSize + " bytes");
                 byte[] receivedImageByte = readBytes(bis, dataSize);
-                // byte[] receivedImageByte = new byte[dataSize];
-                /*
-                for(int i = 0; i < dataSize; i++) {
-                    receivedImageByte[i] = readByte(bis);
-                }
-                */
                 Image receivedImage = byteToFXImage(receivedImageByte);
                 mImageScreen.setImage(receivedImage);
                 // saveImageByte(receivedImageByte);// For debug
