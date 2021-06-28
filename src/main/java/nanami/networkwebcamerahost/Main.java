@@ -11,8 +11,7 @@ public class Main extends Application{
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/Main.fxml"));
         primaryStage.setTitle("Network WebCamera Server");
-        primaryStage.setScene(new Scene(root, 640, 480));
-        primaryStage.setResizable(false);
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 }

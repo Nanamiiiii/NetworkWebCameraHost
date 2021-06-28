@@ -14,7 +14,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -88,12 +87,13 @@ public class MainController implements Initializable {
     private void generateImageViewWindow(String hostIP, String hostPort) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ImageScreen.fxml"));
         AnchorPane root = (AnchorPane) loader.load();
-        ImageScreen mImageScreen = loader.getController();
+        ImageScreenController mImageScreenController = loader.getController();
         ImageServer mImageServer = new ImageServer(hostIP, hostPort);
-        mImageServer.setImageScreen(mImageScreen);
-        mImageScreen.setImageServer(mImageServer);
-        Scene scene = new Scene(root);
+        mImageServer.setImageScreen(mImageScreenController);
+        mImageScreenController.setImageServer(mImageServer);
         Stage stage = new Stage();
+        mImageScreenController.setStage(stage);
+        Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("ImageView " + "[" + hostIP + ":" + hostPort + "]");
         stage.showAndWait();

@@ -1,6 +1,6 @@
 package nanami.networkwebcamerahost;
 
-import nanami.networkwebcamerahost.fxcontroller.ImageScreen;
+import nanami.networkwebcamerahost.fxcontroller.ImageScreenController;
 import javafx.scene.image.Image;
 
 import javax.imageio.ImageIO;
@@ -15,7 +15,7 @@ public class ImageServer {
     private String hostPort;
     private boolean running = false;
     private boolean connectionEstablished = false;
-    private ImageScreen mImageScreen;
+    private ImageScreenController mImageScreenController;
     private ServerSocket mServerSocket = null;
     private Socket mSocket = null;
     private Thread receiveImageThread;
@@ -46,14 +46,14 @@ public class ImageServer {
         stop();
     }
 
-    public void setImageScreen (ImageScreen mImageScreen) {
-        if (mImageScreen != null) {
-            this.mImageScreen = mImageScreen;
+    public void setImageScreen (ImageScreenController mImageScreenController) {
+        if (mImageScreenController != null) {
+            this.mImageScreenController = mImageScreenController;
         }
     }
 
-    public ImageScreen getImageScreen() {
-        return this.mImageScreen;
+    public ImageScreenController getImageScreen() {
+        return this.mImageScreenController;
     }
 
     /* Private Method */
@@ -77,7 +77,7 @@ public class ImageServer {
                 System.out.println(TAG + "\treceived\t" + dataSize + " bytes");
                 byte[] receivedImageByte = readBytes(bis, dataSize);
                 Image receivedImage = byteToFXImage(receivedImageByte);
-                mImageScreen.setImage(receivedImage);
+                mImageScreenController.setImage(receivedImage);
                 // saveImageByte(receivedImageByte);// For debug
                 sleep(1);
             }
