@@ -9,6 +9,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class ImageScreenController {
+
+    /* Fields */
+
     @FXML
     private ImageView imageView;
 
@@ -18,6 +21,8 @@ public class ImageScreenController {
     private ImageServer mImageServer;
     private String TAG = "[ImageScreen Controller]";
     private Stage mStage;
+
+    /* Methods */
 
     @FXML
     public void onClickClose(ActionEvent event) {

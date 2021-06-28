@@ -1,5 +1,6 @@
 package nanami.networkwebcamerahost.fxcontroller;
 
+import javafx.stage.Modality;
 import nanami.networkwebcamerahost.ImageServer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -43,6 +44,7 @@ public class MainController implements Initializable {
     private ChoiceBox<String> nic_select;
 
     private List<InetAddress> ipv4List;
+    private Stage mainStage;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -84,21 +86,36 @@ public class MainController implements Initializable {
         }
     }
 
+    public void setMainStage(Stage stage){
+        this.mainStage = stage;
+    }
+
+    // Generate ImageView Window
+    // Once generated this, server start
     private void generateImageViewWindow(String hostIP, String hostPort) throws IOException {
+        // Load FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ImageScreen.fxml"));
         AnchorPane root = (AnchorPane) loader.load();
+
+        // Setup controller, server
         ImageScreenController mImageScreenController = loader.getController();
         ImageServer mImageServer = new ImageServer(hostIP, hostPort);
         mImageServer.setImageScreen(mImageScreenController);
         mImageScreenController.setImageServer(mImageServer);
+
         Stage stage = new Stage();
         mImageScreenController.setStage(stage);
         Scene scene = new Scene(root);
+
+        // Stage setting
+        stage.initModality(Modality.APPLICATION_MODAL); // To lock main window
+        stage.initOwner(mainStage);
         stage.setScene(scene);
         stage.setTitle("ImageView " + "[" + hostIP + ":" + hostPort + "]");
         stage.showAndWait();
     }
 
+    // For validation
     private List<String> getNICList () throws IOException {
         Enumeration<NetworkInterface> enuIfs = NetworkInterface.getNetworkInterfaces();
         List<String> ipList = new ArrayList<>();
