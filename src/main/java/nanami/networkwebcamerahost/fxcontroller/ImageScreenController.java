@@ -1,5 +1,7 @@
 package nanami.networkwebcamerahost.fxcontroller;
 
+import javafx.application.Platform;
+import javafx.fxml.Initializable;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -10,7 +12,10 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class ImageScreenController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class ImageScreenController implements Initializable {
 
     /* Fields */
 
@@ -31,6 +36,11 @@ public class ImageScreenController {
     private Stage mStage;
 
     /* Methods */
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+    }
+
 
     @FXML
     public void onClickClose(ActionEvent event) {
@@ -60,7 +70,14 @@ public class ImageScreenController {
 
     public void setStage(Stage mStage) { this.mStage = mStage; }
 
+    public void closeFromOutside(){
+        Platform.runLater(() -> {
+            mStage.close();
+        });
+    }
+
     public ImageServer getImageServer() {
         return mImageServer;
     }
+
 }

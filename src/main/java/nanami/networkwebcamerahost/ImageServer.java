@@ -1,5 +1,6 @@
 package nanami.networkwebcamerahost;
 
+import javafx.application.Platform;
 import nanami.networkwebcamerahost.fxcontroller.ImageScreenController;
 import javafx.scene.image.Image;
 
@@ -57,6 +58,10 @@ public class ImageServer {
         return this.mImageScreenController;
     }
 
+    public boolean serverAlive(){
+        return receiveImageThread.isAlive();
+    }
+
     /* Private Method */
 
     private void start() {
@@ -72,14 +77,20 @@ public class ImageServer {
                     inputError();
                     break;
                 }
-                // Next 4 bytes are size of image
-                byte[] dataSizeByte = readBytes(bis, 4);
-                int dataSize = ByteBuffer.wrap(dataSizeByte).getInt();
-                System.out.println(TAG + "\treceived\t" + dataSize + " bytes");
-                byte[] receivedImageByte = readBytes(bis, dataSize);
-                Image receivedImage = byteToFXImage(receivedImageByte);
-                mImageScreenController.setImage(receivedImage);
-                // saveImageByte(receivedImageByte);// For debug
+                try {
+                    // Next 4 bytes are size of image
+                    byte[] dataSizeByte = readBytes(bis, 4);
+                    int dataSize = ByteBuffer.wrap(dataSizeByte).getInt();
+                    System.out.println(TAG + "\treceived\t" + dataSize + " bytes");
+                    byte[] receivedImageByte = readBytes(bis, dataSize);
+                    Image receivedImage = byteToFXImage(receivedImageByte);
+                    mImageScreenController.setImage(receivedImage);
+                    // saveImageByte(receivedImageByte);// For debug
+                } catch (StreamReadingException e){
+                    System.err.println(TAG + "\tConnection will close.");
+                    running = false;
+                    mImageScreenController.closeFromOutside();
+                }
                 sleep(1);
             }
 
@@ -157,20 +168,25 @@ public class ImageServer {
         running = false;
     }
 
-    private byte[] readBytes(BufferedInputStream bis, int size) {
+    private byte[] readBytes(BufferedInputStream bis, int size) throws StreamReadingException {
         byte[] input = new byte[size];
         int offset = 0;
         int readByte = 0;
+        int now_read = 0;
         try {
             // keep reading until getting all bytes
             while(readByte < size) {
-                readByte += bis.read(input, offset, size - readByte);
+                if((now_read = bis.read(input, offset, size - readByte)) == -1) {
+                    throw new StreamReadingException("Byte Reading Error.");
+                }
+                readByte += now_read;
                 offset = readByte;
             }
             System.out.println(TAG + "\tread " + size + " bytes");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return input;
     }
 
@@ -210,6 +226,7 @@ public class ImageServer {
             e.printStackTrace();
             return false;
         }
+
         InetAddress clientAddr = mSocket.getInetAddress();
         String progstr = "Connect to " + clientAddr.getHostAddress();
         connectionEstablished = true;
