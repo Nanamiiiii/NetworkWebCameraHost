@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 import java.awt.image.*;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -209,7 +210,11 @@ public class ImageServer {
             e.printStackTrace();
             return false;
         }
+        InetAddress clientAddr = mSocket.getInetAddress();
+        String progstr = "Connect to " + clientAddr.getHostAddress();
         connectionEstablished = true;
+        mImageScreenController.setIndicatorVisibility(false);
+        mImageScreenController.setProgressText(progstr);
         System.out.println(TAG + "\tConnection Accepted.");
         return true;
     }

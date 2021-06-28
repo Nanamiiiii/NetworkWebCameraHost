@@ -1,5 +1,7 @@
 package nanami.networkwebcamerahost.fxcontroller;
 
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import nanami.networkwebcamerahost.ImageServer;
 import javafx.event.ActionEvent;
@@ -18,6 +20,12 @@ public class ImageScreenController {
     @FXML
     private Button closeBtn;
 
+    @FXML
+    private ProgressIndicator connectionProgress;
+
+    @FXML
+    private Text progressText;
+
     private ImageServer mImageServer;
     private String TAG = "[ImageScreen Controller]";
     private Stage mStage;
@@ -34,6 +42,16 @@ public class ImageScreenController {
     @FXML
     public void setImage(Image image) {
        imageView.setImage(image);
+    }
+
+    @FXML
+    public void setIndicatorVisibility(boolean val){
+        connectionProgress.setVisible(val);
+    }
+
+    @FXML
+    public void setProgressText(String str){
+        progressText.setText(str);
     }
 
     public void setImageServer (ImageServer mImageServer) {
