@@ -83,8 +83,11 @@ public class ImageServer {
                     int dataSize = ByteBuffer.wrap(dataSizeByte).getInt();
                     System.out.println(TAG + "\treceived\t" + dataSize + " bytes");
                     byte[] receivedImageByte = readBytes(bis, dataSize);
-                    Image receivedImage = byteToFXImage(receivedImageByte);
-                    mImageScreenController.setImage(receivedImage);
+                    Thread setImageThread = new Thread(() -> {
+                        Image receivedImage = byteToFXImage(receivedImageByte);
+                        mImageScreenController.setImage(receivedImage);
+                    });
+                    setImageThread.start();
                     // saveImageByte(receivedImageByte);// For debug
                 } catch (StreamReadingException e){
                     System.err.println(TAG + "\tConnection will close.");
