@@ -6,6 +6,7 @@
 ## 使用方法
 
 ### 必須要件
+- OS: Linux, Win, Mac (Linux, Winは動作確認済み)
 - OpenJDK Java Runtime 15以上
 
 ### 操作
@@ -29,8 +30,7 @@ Socketを介してバイト列を受け取る．
 ```
 0xff + 画像サイズ<4byte> + 画像バイト配列
 ```
-画像バイト列はJPEGバイト配列  
-バグなのか，Java FXのImageView上に直接Jpeg描画ができなかったため，BMPに変換した後表示  
+画像バイト列はJPEGバイト配列 
 クライアント側から切断された場合は自動的に受信終了する．
 
 
