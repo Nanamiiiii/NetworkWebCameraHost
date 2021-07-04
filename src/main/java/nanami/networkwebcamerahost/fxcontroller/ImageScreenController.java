@@ -14,6 +14,8 @@ import javafx.scene.image.ImageView;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ImageScreenController implements Initializable {
 
@@ -34,6 +36,7 @@ public class ImageScreenController implements Initializable {
     private ImageServer mImageServer;
     private String TAG = "[ImageScreen Controller]";
     private Stage mStage;
+    private Lock imageLock = new ReentrantLock();
 
     /* Methods */
 
@@ -51,7 +54,12 @@ public class ImageScreenController implements Initializable {
 
     @FXML
     public void setImage(Image image) {
-       imageView.setImage(image);
+        imageLock.lock();
+        try {
+            imageView.setImage(image);
+        }finally{
+            imageLock.unlock();
+        }
     }
 
     @FXML

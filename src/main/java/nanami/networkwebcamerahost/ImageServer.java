@@ -11,6 +11,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import javafx.embed.swing.SwingFXUtils;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class ImageServer {
     private String hostIP;
@@ -21,6 +24,7 @@ public class ImageServer {
     private ServerSocket mServerSocket = null;
     private Socket mSocket = null;
     private Thread receiveImageThread;
+    private Thread setImageThread;
     private String TAG = "[ImageServer]";
 
     /* Public Method */
@@ -81,20 +85,21 @@ public class ImageServer {
                     // Next 4 bytes are size of image
                     byte[] dataSizeByte = readBytes(bis, 4);
                     int dataSize = ByteBuffer.wrap(dataSizeByte).getInt();
-                    System.out.println(TAG + "\treceived\t" + dataSize + " bytes");
+                    // System.out.println(TAG + "\treceived\t" + dataSize + " bytes");
                     byte[] receivedImageByte = readBytes(bis, dataSize);
-                    Thread setImageThread = new Thread(() -> {
+                    setImageThread = new Thread(() -> {
                         Image receivedImage = byteToFXImage(receivedImageByte);
                         mImageScreenController.setImage(receivedImage);
                     });
                     setImageThread.start();
+                    // setImageThread.join();
                     // saveImageByte(receivedImageByte);// For debug
                 } catch (StreamReadingException e){
                     System.err.println(TAG + "\tConnection will close.");
                     running = false;
                     mImageScreenController.closeFromOutside();
                 }
-                sleep(1);
+                // sleep(1);
             }
 
             closeBufferedIS(bis);
@@ -128,16 +133,14 @@ public class ImageServer {
     }
 
     private Image byteToFXImage (byte[] bytes) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        javafx.scene.image.Image fxImage = null;
         try {
             BufferedImage bi = ImageIO.read(new ByteArrayInputStream(bytes));
-            ImageIO.write(bi, "bmp", bos);
-            bos.flush();
+            fxImage = SwingFXUtils.toFXImage(bi, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-        return new javafx.scene.image.Image(bis);
+        return fxImage;
     }
 
     // For Debug
