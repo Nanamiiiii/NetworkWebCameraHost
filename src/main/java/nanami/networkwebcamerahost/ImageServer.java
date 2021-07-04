@@ -25,6 +25,8 @@ public class ImageServer {
     private Socket mSocket = null;
     private Thread receiveImageThread;
     private Thread setImageThread;
+    private Thread renderImageThread;
+    private RenderImage mRenderImage;
     private String TAG = "[ImageServer]";
 
     /* Public Method */
@@ -38,6 +40,7 @@ public class ImageServer {
             System.out.println(TAG + "\tCannot open the port.");
             e.printStackTrace();
         }
+        mRenderImage = new RenderImage();
         startServer();
     }
 
@@ -69,6 +72,16 @@ public class ImageServer {
     /* Private Method */
 
     private void start() {
+        renderImageThread = new Thread(() -> {
+            while(running) {
+                Image renderImage = mRenderImage.getImage();
+                if (renderImage != null) {
+                    mImageScreenController.setImage(renderImage);
+                }
+                sleep(1000/60);
+            }
+        });
+
         receiveImageThread = new Thread(() -> {
             if (!connectionEstablished) {
                 if (!waitingConnection()) return;
@@ -85,21 +98,21 @@ public class ImageServer {
                     // Next 4 bytes are size of image
                     byte[] dataSizeByte = readBytes(bis, 4);
                     int dataSize = ByteBuffer.wrap(dataSizeByte).getInt();
-                    // System.out.println(TAG + "\treceived\t" + dataSize + " bytes");
                     byte[] receivedImageByte = readBytes(bis, dataSize);
+                    if(setImageThread != null && setImageThread.isAlive()){
+                        setImageThread.interrupt();
+                    }
                     setImageThread = new Thread(() -> {
                         Image receivedImage = byteToFXImage(receivedImageByte);
-                        mImageScreenController.setImage(receivedImage);
+                        mRenderImage.setImage(receivedImage);
                     });
                     setImageThread.start();
-                    // setImageThread.join();
-                    // saveImageByte(receivedImageByte);// For debug
+                    sleep(1);
                 } catch (StreamReadingException e){
                     System.err.println(TAG + "\tConnection will close.");
                     running = false;
                     mImageScreenController.closeFromOutside();
                 }
-                // sleep(1);
             }
 
             closeBufferedIS(bis);
@@ -108,6 +121,7 @@ public class ImageServer {
         });
 
         receiveImageThread.start();
+        renderImageThread.start();
     }
 
     private void stop() {
@@ -118,6 +132,10 @@ public class ImageServer {
             if (receiveImageThread != null) {
                 receiveImageThread.join();
                 receiveImageThread = null;
+            }
+            if (renderImageThread != null){
+                renderImageThread.join();
+                renderImageThread = null;
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

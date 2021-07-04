@@ -53,13 +53,8 @@ public class ImageScreenController implements Initializable {
     }
 
     @FXML
-    public synchronized void setImage(Image image) {
-        imageLock.lock();
-        try {
-            imageView.setImage(image);
-        }finally{
-            imageLock.unlock();
-        }
+    public void setImage(Image image) {
+        imageView.setImage(image);
     }
 
     @FXML
