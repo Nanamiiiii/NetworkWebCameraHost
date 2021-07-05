@@ -2,13 +2,12 @@ package nanami.networkwebcamerahost.fxcontroller;
 
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import nanami.networkwebcamerahost.ImageServer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -47,9 +46,15 @@ public class ImageScreenController implements Initializable {
 
     @FXML
     public void onClickClose(ActionEvent event) {
-        mImageServer.stopServer();
-        mImageServer = null;
-        this.mStage.close();
+        Alert closeDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        closeDialog.setContentText("Are you sure disconnecting?");
+        closeDialog.showAndWait()
+                .filter(response -> response == ButtonType.OK)
+                .ifPresent(response -> {
+                    mImageServer.stopServer();
+                    mImageServer = null;
+                    this.mStage.close();
+                });
     }
 
     @FXML
@@ -75,6 +80,9 @@ public class ImageScreenController implements Initializable {
 
     public void closeFromOutside(){
         Platform.runLater(() -> {
+            Alert errorDialog = new Alert(Alert.AlertType.ERROR);
+            errorDialog.setContentText("Disconnected");
+            errorDialog.showAndWait();
             mStage.close();
         });
     }
