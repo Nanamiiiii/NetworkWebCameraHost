@@ -16,6 +16,7 @@ jarから起動後，端末のローカルIPアドレス確認を兼ねて，ド
 [Close] ボタンで現セッションを切断できる．
 
 ## スクリーンショット
+
 <center>
 
 <img src="docs/screenshots/ss_1.png" width="80%">
@@ -41,12 +42,12 @@ Socketを介してバイト列を受け取る．
 
 ### 使用言語・ツール等
 - Intellij IDEA Ultimate 2021.1.2
-- OpenJDK 15
+- OpenJDK 15.0.2
 - OpenJFX 16
 - Gradle 6.8
 
 ## To Build
-`build.gradle`にLinux, Win, Macのjfxを指定済み
+仕様上はどのOSからも可能
 
 ### Intellij IDEAからビルド
 IDEがGradleを認識して走らせてくれるので確実．
@@ -55,7 +56,7 @@ IDEがGradleを認識して走らせてくれるので確実．
 1. gradleを認識していると，右側にgradleタブがあるので開き，Taskの中からbuildを探して実行
 
 ### Gradleで手動ビルド
-Gradle Wrapperを直接使う. 手軽にできる．
+Gradle Wrapperを直接使う. Gradleバージョンの制約により，JDK16以上ではビルド不可
 1. JDK 15を導入してデフォルトにしておく．
 1. シェルスクリプトのgradlewに実行権限を与え，`./gladlew build` を実行  
 Windowsの場合はシェルスクリプトではなくバッチファイル`gradlew.bat`を実行
