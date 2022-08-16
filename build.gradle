@@ -1,19 +1,19 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
-version '0.1.0-alpha'
+version '0.2.0'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     runtimeOnly "org.openjfx:javafx-base:$javafx.version:win"
     runtimeOnly "org.openjfx:javafx-base:$javafx.version:linux"
     runtimeOnly "org.openjfx:javafx-base:$javafx.version:mac"
@@ -32,7 +32,7 @@ dependencies {
 }
 
 javafx {
-    version = "16"
+    version = "18.0.2"
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing']
 }
 
@@ -42,7 +42,9 @@ jar {
         attributes 'Main-Class': 'nanami.networkwebcamerahost.AppLauncher'
     }
     from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath
+                .findAll { !it.name.endsWith('pom') }
+                .collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
