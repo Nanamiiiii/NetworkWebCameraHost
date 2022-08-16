@@ -43,7 +43,8 @@ jar {
     }
     from {
         configurations.runtimeClasspath
-                .findAll { !it.name.endsWith('pom') }
+                .findAll { !it.name.endsWith('jar') }
+                .findAll { !it.name.endWith('pom') }
                 .collect { it.isDirectory() ? it : zipTree(it) }
     }
 }

@@ -1,0 +1,33 @@
+name: Build jar for making release
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build fat jar with Gradle
+        run: ./gradlew shadowJar
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        env:
+          REF: ${{ github.ref }}
+        with:
+          files: |
+            build/libs/NetworkWebCameraHost-${REF##*/v}.jar
