@@ -12,6 +12,12 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v2
 
+      - name: Set release version
+        id: get_ver
+        run: echo "::set-output name=version::${REF##*/v}"
+        env:
+          REF: ${{ github.ref }}
+
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
@@ -26,8 +32,6 @@ jobs:
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
-        env:
-          REF: ${{ github.ref }}
         with:
           files: |
-            build/libs/NetworkWebCameraHost-${REF##*/v}.jar
+            build/libs/NetworkWebCameraHost-${{ steps.get_ver.outputs.version }}-all.jar
